@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: zte-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zte
+      POSTGRES_PASSWORD: zte
+      POSTGRES_DB: zte
+    ports:
+      - "5433:5432"
+    volumes:
+      - zte_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zte -d zte"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: zte-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  zte_pg_data:
