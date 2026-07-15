@@ -8,8 +8,9 @@ import {
   timestamp,
   pgEnum,
   uniqueIndex,
+  check,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const stores = pgTable("stores", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -17,19 +18,27 @@ export const stores = pgTable("stores", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const products = pgTable("products", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: text("description").notNull().default(""),
-  price: numeric("price", { precision: 10, scale: 2 }).notNull(), // never float, avoids rounding errors on money
-  currency: varchar("currency", { length: 3 }).notNull().default("XOF"),
-  stock: integer("stock").notNull().default(0),
-  imageUrl: text("image_url").notNull(),
-  storeId: uuid("store_id")
-    .notNull()
-    .references(() => stores.id, { onDelete: "cascade" }), // delete store -> its products go too
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+export const products = pgTable(
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull().default(""),
+    price: numeric("price", { precision: 10, scale: 2, mode: "number" }).notNull(), // mode: "number" makes TS infer a real number, not a string
+    currency: varchar("currency", { length: 3 }).notNull().default("XOF"),
+    stock: integer("stock").notNull().default(0),
+    imageUrl: text("image_url").notNull(),
+    storeId: uuid("store_id")
+      .notNull()
+      .references(() => stores.id, { onDelete: "cascade" }), // delete store -> its products go too
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    // DB-level protection, on top of any application validation
+    stockNonNegative: check("stock_non_negative", sql`${table.stock} >= 0`),
+    priceStrictlyPositive: check("price_strictly_positive", sql`${table.price} > 0`),
+  })
+);
 
 // DB-level guarantee matching the SignupStatus union type in packages/shared.
 export const signupStatusEnum = pgEnum("signup_status", ["pending", "sent", "failed"]);

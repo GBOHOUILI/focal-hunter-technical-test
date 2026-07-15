@@ -1,0 +1,2 @@
+ALTER TABLE "products" ADD CONSTRAINT "stock_non_negative" CHECK ("products"."stock" >= 0);--> statement-breakpoint
+ALTER TABLE "products" ADD CONSTRAINT "price_strictly_positive" CHECK ("products"."price" > 0);
