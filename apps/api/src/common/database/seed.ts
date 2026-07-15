@@ -68,6 +68,15 @@ async function main() {
       imageUrl: "https://images.unsplash.com/photo-1587593810167-a84920ea0781",
       storeId: storeB.id,
     },
+    {
+      title: "Ignames Précoces (Rupture)",
+      description: "Ignames de la nouvelle récolte, très demandées — stock épuisé.",
+      price: 2800,
+      currency: "XOF",
+      stock: 0,
+      imageUrl: "https://images.unsplash.com/photo-1518977676601-b53f82aba655",
+      storeId: storeA.id,
+    },
   ]);
 
   console.log("Seed done.");
