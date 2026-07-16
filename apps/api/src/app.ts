@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { httpExceptionFilter } from "./common/filters/http-exception.filter";
 import { createProductsModule } from "./products/products.module";
+import { db } from "./common/database/client";
 
 export function createApp() {
   const app = express();
@@ -9,7 +10,7 @@ export function createApp() {
   app.use(cors());
   app.use(express.json());
 
-  const { router: productsRouter } = createProductsModule();
+  const { router: productsRouter } = createProductsModule(db);
   app.use("/products", productsRouter);
 
   // 404 for any unmatched route
