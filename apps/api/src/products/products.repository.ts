@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "../common/database/client";
-import { products, stores } from "../common/database/schema";
+import { products, stores } from "@zte/shared";
 import type { Database } from "../common/database/client";
 
 // shape of one row after the leftjoin:products columns + the store's name only.

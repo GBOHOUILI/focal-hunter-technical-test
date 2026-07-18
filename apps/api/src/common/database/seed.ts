@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { db, pool } from "./client";
-import { stores, products } from "./schema";
+import { stores, products } from "@zte/shared";
 
 async function main() {
   console.log("Seeding...");

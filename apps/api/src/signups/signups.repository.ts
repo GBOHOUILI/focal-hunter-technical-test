@@ -1,5 +1,5 @@
 import { db } from "../common/database/client";
-import { signups } from "../common/database/schema";
+import { signups } from "@zte/shared";
 import type { Database } from "../common/database/client";
 import type { SignupStatus } from "@zte/shared";
 import { ConflictException } from "../common/filters/http-exception.filter";
