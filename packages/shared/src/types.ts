@@ -38,3 +38,14 @@ export interface Signup {
   status: SignupStatus;
   createdAt: string;
 }
+
+// Payload sent by the API and consumed by the worker through the queue.
+// Kept minimal on purpose — only what the worker needs to process the job.
+export interface SignupNotificationJobPayload {
+  signupId: string;
+  email: string;
+  productId: string;
+}
+
+export const SIGNUP_NOTIFICATION_QUEUE = "signup-notification" as const;
+export const SIGNUP_NOTIFICATION_JOB = "send-signup-email" as const;
