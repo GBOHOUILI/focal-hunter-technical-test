@@ -35,6 +35,10 @@ interface ErrorResponseBody {
   };
 }
 
+interface BodyParserSyntaxError extends SyntaxError {
+  type?: string;
+}
+
 // Single error-handling middleware for the whole app.
 // Must be registered LAST in app.ts (4-argument signature is how Express
 // recognizes an error handler, vs a normal middleware with 3 arguments).
@@ -44,6 +48,14 @@ export function httpExceptionFilter(
   res: Response<ErrorResponseBody>,
   _next: NextFunction
 ) {
+  // Malformed JSON body — express.json() throws this before our code ever runs.
+  if (err instanceof SyntaxError && (err as BodyParserSyntaxError).type === "entity.parse.failed") {
+    res.status(400).json({
+      error: { code: "INVALID_JSON", message: "Request body contains malformed JSON" },
+    });
+    return;
+  }
+
   if (err instanceof ZodError) {
     res.status(400).json({
       error: {
